@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Интернет-магазин</title>
+</head>
+
+<body>
+    <h1>Добро пожаловать в интернет-магазин</h1>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <div class="product-list">
+        {% for product in products %}
+        <div class="product">
+            <img src="../static/images/product{{product['id']}}.jpg"
+                alt="{{ product['name'] }}">
+            <h3>{{ product['name'] }}</h3>
+            <p>Цена: ${{ product['price'] }}</p>
+            <button class="add-to-cart-button" data-product-id="{{ product['id'] }}">Добавить в корзину</button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var buttons = document.querySelectorAll('.add-to-cart-button');
+
+            buttons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var productId = this.getAttribute('data-product-id');
+
+                    axios.get('/api/add_to_cart/' + productId)
+                        .then(function (response) { 
+                            button.classList.add('animate__animated', 'animate__rubberBand');
+                            setTimeout(function () {
+                                button.classList.remove('animate__animated', 'animate__rubberBand');
+                            }, 1000);
+                        })
+                        .catch(function (error) {
+                            console.error(error);
+                        });
+                });
+            });
+        });
+    </script>
+
+    <a href="{{ url_for('view_cart') }}" class="cart-button">Корзина</a>
+</body>
+
+</html>
